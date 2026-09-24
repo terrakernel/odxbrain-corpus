@@ -32,9 +32,11 @@ A few properties shape everything in this repo:
   required; recall is measured separately for each, and changes are judged by the weakest one.
 - **It knows Odoo versions.** Given the instance's version (14.0–19.0) and edition, it resolves
   renamed models to the name that instance uses, and leaves out models the instance can't have.
-- **It covers the core of Odoo, 41 models, on purpose.** Those 41 hold the day-to-day data of
-  accounting, sales, purchasing, inventory, manufacturing and point of sale, and they barely change
-  between Odoo versions. Custom and add-on models are added per deployment, not here.
+- **It starts from a core of 41 models covering the whole ERP cycle.** Those 41 hold the
+  day-to-day data of accounting, sales, purchasing, inventory, manufacturing and point of sale,
+  and they barely change between Odoo versions. Odoo's other apps (helpdesk, project, field
+  service and the rest) are coming as **extension packs**, one per app, and are open to
+  contributions. See [Extensions](#extensions-coming-next).
 
 ODXBrain is part of the [ODXProxy](https://odxproxy.io) ecosystem. The engine is closed source.
 
@@ -168,14 +170,37 @@ connected machine and carry it across if the deployment is air-gapped.
 **A pack only works with the embedding model it was baked with.** The manifest names that model,
 and ODXBrain refuses a pack that doesn't match. See `docs/PACK-FORMAT.md`.
 
-Models outside these 41 (your custom modules, community add-ons) don't belong in this corpus. They
-go into ODXBrain's per-instance custom layer (Layer 2) on your own deployment.
+Your own custom modules and Studio models don't belong in this corpus. They go into ODXBrain's
+per-instance custom layer (Layer 2) on your own deployment.
+
+You're free to fork this repo, add models and bake your own pack; the license allows it. That pack
+is unsupported: no one measures its recall, and it may offer models to instances that don't have
+them. Give it a version suffix (`2026.09.4+yourname`) so it can never be mistaken for an official
+release. Only a pack whose checksum matches a signed release here is official.
+
+## Extensions (coming next)
+
+The core covers the ERP cycle. Odoo's newer apps build on it, and they will be covered by
+**extension packs**:
+
+- **One extension per Odoo app**, named after the module that declares its models (`helpdesk`,
+  `project`, …). A deployment loads the core plus the extensions it wants.
+- **Each extension model records the module it comes from.** When the caller says which modules an
+  instance has installed, models from missing modules are left out. When it doesn't say, nothing
+  is filtered.
+- **Adding coverage must never cost the core.** Every extension is tested with the core loaded,
+  and any drop in the core's weakest language blocks the merge.
+
+Before the first contributed extension is accepted, we are measuring how recall holds up as the
+number of models grows. Every result so far was measured with 41. The layout and contribution
+steps will be published with the first extension, which we'll write as the worked example. Until
+then, **open a "model coverage" issue** naming the app and models you need. That list decides
+which extensions come first.
 
 ## Contributing
 
 See `CONTRIBUTING.md`. In short: better descriptions, keywords in languages we're weak in, audit
-corrections, and audits of new Odoo versions are all welcome. New models are not; the 41 are the
-whole corpus by design.
+corrections, audits of new Odoo versions, and requests for app coverage are all welcome.
 
 ## A note on `DECISIONS.md` references
 

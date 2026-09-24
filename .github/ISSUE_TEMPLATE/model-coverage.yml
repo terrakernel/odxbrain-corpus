@@ -1,0 +1,41 @@
+name: Model coverage
+description: Ask for an Odoo app or model the corpus doesn't cover yet
+title: "coverage: <app>"
+labels: ["model-coverage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The 41-model core covers the ERP cycle. Other Odoo apps will be covered by per-app
+        extension packs; these requests decide which come first. Custom modules and Studio
+        models specific to your deployment belong in ODXBrain's Layer 2, not here.
+  - type: input
+    id: app
+    attributes:
+      label: Odoo app / module
+      description: The technical module name if you know it (e.g. helpdesk, project, hr_expense)
+    validations:
+      required: true
+  - type: textarea
+    id: models
+    attributes:
+      label: Models
+      description: The model names you need, one per line (e.g. helpdesk.ticket)
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Odoo versions and edition you run
+      placeholder: 17.0 Enterprise, 18.0 Community
+  - type: textarea
+    id: questions
+    attributes:
+      label: Example questions
+      description: Real questions people ask that should land on these models, in any language. These may become public test questions.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Help
+      options:
+        - label: I'd like to help write this extension

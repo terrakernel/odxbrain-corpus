@@ -2,7 +2,7 @@
 
 The open data behind ODXBrain, which turns a plain-language question into the three Odoo models
 most likely to hold the answer. This repo holds what that engine searches and filters on: 41
-model cards, the audited version/edition facts, and the scripts that audit them. Compiled packs
+core model cards, the audited version/edition facts, and the scripts that audit them. Compiled packs
 are release assets, never commits. Read `README.md` first for the why.
 
 **This file is public**, like everything in the repo. It carries only rules for working on the
@@ -12,10 +12,12 @@ data. The engine, the bake tool and the evaluation question set are closed and n
 
 These are not preferences. Breaking one produces wrong answers that raise no error.
 
-- **41 models is the whole corpus, deliberately.** Don't add a model, even a common one. Core Odoo
-  models are ~90% stable across 14.0–19.0; the full model list is ~41% stable, and every extra
-  near-neighbour competes for the top three. Deployment-specific models belong in the engine's
-  per-instance layer (Layer 2), not here.
+- **The core is 41 models and doesn't grow.** They cover the whole ERP cycle and are ~90%
+  version-stable (all of Odoo is ~41%). Other Odoo apps get **per-app extension packs**, planned
+  but not open yet: recall beyond 41 candidates is being measured first. Until the layout is
+  published, don't create extension files. Point requests to a "model coverage" issue.
+  Every extension is judged by one rule: **the core's worst-language recall must not drop with it
+  loaded.** Deployment-specific custom models belong in the engine's Layer 2, not here.
 - **An absent fact is not a default.** In `corpus/odoo-versions.json`, a model with no entry
   exists in every supported version and in Community. A missing `since` is not "since 14.0"; a
   missing `edition` is not "community". Only write a fact you have read in Odoo source. Filtering

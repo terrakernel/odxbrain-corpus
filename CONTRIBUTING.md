@@ -25,12 +25,22 @@ fields and methods, is fine. Copying its source is not.
   file).
 - **Audits of new Odoo versions**, following `corpus/README.md`.
 
+## New models: through extensions, not the core
+
+The core is 41 models and stays that way: they cover the whole ERP cycle. Odoo's other apps will be
+covered by per-app **extension packs** (see the README). Extensions aren't open for pull requests
+yet. We're first measuring how recall holds up beyond 41 models, so that no one's work is refused
+later because of a limit nobody knew about.
+
+**What to do now:** open a "model coverage" issue naming the Odoo app and the models you need. If
+you'd like to help write that extension, say so there. Pull requests that add models to the core
+will be closed and pointed at the issue.
+
+**Models specific to your own deployment** (custom modules, Studio) belong in ODXBrain's
+per-instance custom layer (Layer 2), not here.
+
 ## What's declined
 
-- **New models.** These 41 are the whole corpus, deliberately, and not a sample to grow. Core Odoo
-  models are 90% stable across 14.0–19.0; the full model list is 41% stable, and every extra
-  near-neighbour competes for the top three answers. Models specific to your deployment belong in
-  ODXBrain's per-instance custom layer (Layer 2).
 - **Changes that improve English and regress another language.** Changes are judged on the
   **worst** language, not the average and never on English alone.
 
