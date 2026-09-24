@@ -1,0 +1,39 @@
+Main customer sales document that records, validates, and tracks customer orders from quotation to delivery and invoicing.
+Key Functional Use Cases:
+
+Quotations → Sales Orders conversion
+Customer order management with lines, prices, discounts, and taxes
+Automatic creation of deliveries (stock.picking) and invoices (account.move)
+Sales forecasting, margin analysis, and order fulfillment
+Upsell, cross-sell, and product configurator
+Multi-step approval workflows
+Dropshipping, MTO, and service orders
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (sequenced: SOxxxx), state (draft/sent/sale/done/cancel)
+partner_id → res.partner (required), partner_invoice_id, partner_shipping_id
+date_order, commitment_date, validity_date
+amount_untaxed, amount_tax, amount_total
+One2many: order_line → sale.order.line
+pricelist_id, payment_term_id, fiscal_position_id, team_id, user_id (salesperson)
+warehouse_id, picking_ids, invoice_ids
+
+Critical Hooks: action_confirm, action_quotation_send, _prepare_invoice, _create_picking, onchange_partner_id, _compute_amount
+Security: sales_team.group_sale_salesman + company + own documents rules
+
+RAG Routing Keywords:
+sales order, SO, quotation, customer order, sale order, sales quotation, sales confirmation, customer PO, order confirmation, sale document, sales pipeline, draft quotation, confirmed sales order, pending order, awaiting confirmation, cancelled order, order status, sales order state, to invoice, fully invoiced, open sales order
+Related Models (most joined):
+
+sale.order.line (child lines — most important)
+res.partner (customer)
+product.product / product.template
+stock.picking (deliveries)
+account.move (invoices)
+sale.order.line, crm.lead (opportunity link)
+
+Ultra-Dense Vector Paragraph:
+sale.order is Odoo’s core sales document model storing customer orders with partner_id, order lines, totals, state, and dates. It drives quotation workflow, order confirmation, automatic delivery and invoice creation, margin calculation, and serves as the central hub connecting Sales, Inventory, Accounting, and CRM modules.

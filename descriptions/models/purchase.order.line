@@ -1,0 +1,40 @@
+Represents each individual product or service line in a Purchase Order / RFQ, containing quantity, unit price, taxes, and delivery details.
+Key Functional Use Cases:
+
+Define ordered items with expected receipt date
+Support 3-way matching (PO → Receipt → Vendor Bill)
+Calculate line and order totals (untaxed, tax, total)
+Generate stock moves for incoming products
+Handle partial deliveries and remaining quantities
+Purchase reporting and spend analysis per product/supplier
+Blanket orders and framework agreements
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+order_id → purchase.order (required, parent)
+product_id → product.product, product_qty (float)
+price_unit (monetary), discount (if installed)
+taxes_id (Many2many to account.tax)
+date_planned, qty_received, qty_invoiced, qty_to_invoice
+product_uom → uom.uom
+Computed: price_subtotal, price_total, price_tax
+
+Critical Hooks: onchange_product_id, _compute_amount, _prepare_stock_move, _compute_qty_received, _compute_qty_invoiced
+Security: Inherited from parent purchase.order
+
+RAG Routing Keywords:
+purchase order line, PO line, purchase line, RFQ line, vendor order line, procurement line, purchase order detail, ordered quantity, purchase price, purchase product line, receipt line
+Related Models (most joined):
+
+purchase.order (parent)
+product.product / product.template
+stock.move / stock.picking (incoming)
+account.move.line (vendor bill matching)
+res.partner (via order)
+uom.uom
+account.tax
+
+Ultra-Dense Vector Paragraph:
+purchase.order.line is the child model of purchase.order storing each purchased item with product_id, product_qty, price_unit, taxes_id, date_planned, qty_received, and qty_invoiced. It drives stock move creation, vendor bill matching (3-way), partial deliveries, line amount calculations, and is the core transactional detail used across Purchasing, Inventory, and Accounting in Odoo.

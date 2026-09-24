@@ -1,0 +1,38 @@
+Stores individual fixed assets (PPE) with their acquisition value, depreciation rules, book value, and full lifecycle accounting from purchase to disposal.
+Key Functional Use Cases:
+
+Register assets directly or from vendor bills/invoice lines
+Compute and post automatic depreciation entries (linear, degressive, etc.)
+Track current book value, accumulated depreciation, and residual value
+Handle asset sale, scrap, partial disposal, or revaluation
+Generate asset registers, depreciation forecasts, and fiscal reports
+Support multi-company, multi-currency, and localization-specific rules
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (char, required), code (char, sequenced)
+original_value (monetary, required), acquisition_date, disposal_date
+method (selection: linear/degressive), method_number (useful life), method_period, prorata
+account_asset_id, account_depreciation_id, account_depreciation_expense_id (→ account.account)
+journal_id (→ account.journal)
+Computed: book_value, depreciated_value, remaining_value
+One2many: depreciation_move_ids / move_ids (links to posted depreciation journal entries)
+
+Critical Hooks: action_validate, compute_depreciation_board, _post_depreciation_moves, button_dispose, onchange_original_value
+Security: account.group_account_manager + company rules
+Workflow: state machine (draft → open → close), cron-driven depreciation, server actions
+
+RAG Routing Keywords:
+fixed asset, PPE, asset register, depreciation board, accumulated depreciation, book value, asset disposal, asset acquisition, depreciation expense, asset lifecycle, asset code, depreciation schedule, capital asset, fixed asset accounting, draft asset, running asset, fully depreciated, disposed asset, closed asset, asset state
+Related Models (most joined):
+
+account.account (asset / depreciation / expense accounts)
+account.journal (depreciation journal)
+account.move & account.move.line (acquisition + depreciation postings)
+account.asset.model (template, when used)
+res.company
+
+Ultra-Dense Vector Paragraph:
+account.asset is the central Odoo model for fixed assets storing original_value, acquisition_date, depreciation method (linear/degressive), useful life, linked accounts (asset/depreciation/expense), journal, and computed book_value. It drives automatic creation and posting of depreciation journal entries, asset disposal, revaluation, and full integration with the general ledger via account.move. Core to the accounting assets module, heavily referenced by invoices, journals, and financial reports.

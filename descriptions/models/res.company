@@ -1,0 +1,38 @@
+Represents each legal entity / company in a multi-company Odoo database. It holds all company-specific settings, defaults, and master data.
+Key Functional Use Cases:
+
+Multi-company setup and data separation
+Define company header/footer, logo, address, currency, and fiscal data
+Set default accounts, journals, warehouses, and operating rules
+Control inter-company transactions and rules
+Financial localization (fiscal year, tax settings, chart of accounts)
+Document templates (invoices, POs, SOs, reports)
+User access and record rules scoping
+
+Technical DNA:
+
+Model Type: models.Model (persistent, core system model)
+Key Fields:
+name (char, required), partner_id → res.partner (legal address)
+currency_id, company_registry, vat
+street, street2, city, state_id, country_id, zip, phone, email, website
+logo, favicon, font
+account_fiscal_country_id, fiscalyear_last_day, fiscalyear_last_month
+bank_ids (One2many), user_ids (related)
+Many important property_ fields (default accounts, taxes, etc.)
+
+Critical Hooks: _onchange_country_id, create, multi-company record rules engine
+Security: base.group_multi_company + very strict record rules (users can only see their allowed companies)
+
+RAG Routing Keywords:
+company, res.company, legal entity, operating company, multi company, company settings, company configuration, fiscal company, base company, main company, company logo, company address
+Related Models (most joined):
+
+res.partner (company partner)
+res.users (via company_id)
+account.account, account.journal, account.tax (company-scoped)
+stock.warehouse, ir.sequence (company-specific)
+res.currency
+
+Ultra-Dense Vector Paragraph:
+res.company is Odoo’s core company model that stores legal name, address, logo, currency, fiscal settings, default accounts, and configuration for each legal entity. It is the central scoping mechanism for multi-company environments, controlling all default values, document layouts, accounting structures, warehouses, and access rules across the entire system.

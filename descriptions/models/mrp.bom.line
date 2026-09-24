@@ -1,0 +1,39 @@
+Represents one component or raw material inside a Bill of Materials, defining the exact quantity, unit, and consumption rules needed to produce the parent product.
+Key Functional Use Cases:
+
+Define raw materials, sub-assemblies, and consumables in BOMs
+Support multi-level BOM explosion
+Control flexible vs strict consumption during production
+Manage by-products / co-products (via byproduct_id)
+Calculate component requirements for Manufacturing Orders
+Support product variants and optional components
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+bom_id → mrp.bom (required, parent)
+product_id → product.product (required)
+product_qty (float), product_uom_id
+type (normal / phantom)
+operation_id (link to specific workcenter operation)
+bom_id (sub-BOM for multi-level)
+consumption (flexible / strict / warning)
+sequence, active
+
+Critical Hooks: _bom_explode, onchange_product_id, _compute_total_cost
+Security: Inherited from parent BOM (mrp.group_mrp_manager)
+
+RAG Routing Keywords:
+BOM line, BOM component, bill of material line, component quantity, raw material line, mrp.bom.line, BOM explosion, production component, material consumption, sub BOM, phantom component
+Related Models (most joined):
+
+mrp.bom (parent)
+product.product / product.template
+mrp.production (via BOM explosion)
+mrp.workorder
+stock.move (generated consumption moves)
+uom.uom
+
+Ultra-Dense Vector Paragraph:
+mrp.bom.line is the child model of mrp.bom that stores each component with product_id, product_qty, uom, consumption mode (flexible/strict), operation_id, and sub-bom reference. It drives BOM explosion, material requirement calculation, consumption during manufacturing orders, costing, and multi-level production structures in Odoo MRP.

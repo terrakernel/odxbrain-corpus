@@ -1,0 +1,39 @@
+Represents each individual transaction line inside a bank statement, used as the source of truth for bank reconciliation against accounting entries.
+Key Functional Use Cases:
+
+Store imported or manual bank transactions (debits, credits, fees, interest)
+Bank reconciliation (match with payments, invoices, or manual journal items)
+Handle multi-currency transactions and currency differences
+Support auto-matching rules and reconciliation widgets
+Generate bank transaction reports and cash flow analysis
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+statement_id → account.bank.statement (required)
+date (date, required), amount (monetary, can be positive/negative)
+payment_ref / ref (char), narration (text)
+partner_id → res.partner
+account_id → account.account (when not reconciled)
+journal_id (related from statement)
+foreign_currency_id, amount_currency
+Many2many: move_line_ids → account.move.line (reconciled lines)
+Computed: is_reconciled, running_balance
+
+Critical Hooks: action_reconcile, _compute_amount, button_undo_reconciliation, reconcile_bank_lines
+Security: Inherited from parent statement + account manager rights
+
+RAG Routing Keywords:
+bank statement line, statement transaction, reconcile line, unreconciled bank line, bank feed line, imported transaction, bank statement detail, matching bank line, statement line amount, payment reference, bank recon line
+Related Models (most joined):
+
+account.bank.statement (parent)
+account.move.line (via reconciliation)
+account.payment
+res.partner
+account.journal
+account.account
+
+Ultra-Dense Vector Paragraph:
+account.bank.statement.line is the transactional child model of account.bank.statement that stores every bank movement with date, amount, payment_ref, partner_id, and currency details. It serves as the main source for bank reconciliation, linking to account.move.line through move_line_ids, enabling automatic and manual matching of bank transactions with accounting entries, payments, and invoices in Odoo’s accounting and cash management flows.

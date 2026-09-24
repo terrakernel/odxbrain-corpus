@@ -1,0 +1,40 @@
+Central master data model for all contacts — customers, suppliers, companies, individuals, employees, addresses, and any third party the company interacts with.
+Key Functional Use Cases:
+
+Customers (invoicing, delivery, sales)
+Suppliers / Vendors (purchasing, RFQs)
+Addresses (invoice, delivery, contact, private)
+Multi-address management (shipping vs billing)
+Partner hierarchy (parent/child for companies & branches)
+Blacklist, credit limit, payment terms, pricelists
+Used in almost every document: SO, PO, Invoice, Picking, POS, etc.
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (char, required), company_type (person/company)
+parent_id (hierarchy), child_ids (One2many)
+type (contact/invoice/delivery/other)
+street, street2, city, state_id, country_id, zip
+email, phone, mobile, website
+customer_rank, supplier_rank
+property_account_receivable_id, property_account_payable_id
+property_payment_term_id, property_supplier_payment_term_id
+ref (internal reference), barcode, vat, lang
+
+Critical Hooks: onchange_parent_id, name_create, _compute_address, address formatting
+Security: base.group_user (read), stricter for write + commercial rules
+
+RAG Routing Keywords:
+partner, contact, customer, supplier, vendor, res.partner, address, billing address, shipping address, customer rank, supplier rank, third party, business partner, contact person
+Related Models (most joined):
+
+res.company (via partner_id)
+sale.order, purchase.order, account.move, pos.order
+res.partner.bank
+res.country, res.country.state
+account.account (property fields)
+
+Ultra-Dense Vector Paragraph:
+res.partner is Odoo’s central contact model storing name, addresses, contact details, customer/supplier ranks, accounting properties (receivable/payable accounts, payment terms), and hierarchy (parent/child). It is the most referenced model in the system, used as partner_id on sales orders, purchase orders, invoices, pickings, payments, and almost every business document.

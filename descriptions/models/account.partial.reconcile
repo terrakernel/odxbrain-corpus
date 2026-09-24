@@ -1,0 +1,37 @@
+Records each individual partial matching between debit and credit journal items (account.move.line), allowing progressive reconciliation while keeping track of residual amounts.
+Key Functional Use Cases:
+
+Partial payments on invoices/bills (e.g. 60% paid, 40% remaining)
+Partial bank reconciliation (matching part of a statement line)
+Handling over-payments, advances, and credit notes applied partially
+Multi-currency partial matching with exchange differences
+Basis for computing amount_residual on every move line
+Foundation for full reconciliation (account.full.reconcile)
+
+Technical DNA:
+
+Model Type: models.Model (persistent, lightweight)
+Key Fields:
+debit_move_id, credit_move_id → account.move.line
+amount, debit_amount_currency, credit_amount_currency
+currency_id, company_currency_id, company_id
+full_reconcile_id → account.full.reconcile (when completed)
+exchange_move_id (for forex difference)
+max_date (for aging reports)
+
+Critical Hooks: create, unlink (cascades residual recalculation), _check_full_reconcile
+No state field — existence = active partial reconciliation
+Security: Controlled through move line access rights
+
+RAG Routing Keywords:
+partial reconcile, partial reconciliation, partial payment, residual amount, amount residual, unmatched portion, partial matching, partial bank recon, remaining balance, open amount, unreconciled portion, partial application
+Related Models (most joined):
+
+account.move.line (debit_move_id & credit_move_id)
+account.full.reconcile (parent when fully reconciled)
+account.move
+account.bank.statement.line
+account.payment
+
+Ultra-Dense Vector Paragraph:
+account.partial.reconcile is the Odoo model that stores every partial matching between two account.move.line records (debit and credit) with reconciled amount, currency amounts, and links to full_reconcile_id when completed. It powers residual amount calculation, partial payments, progressive bank reconciliation, multi-currency handling, and forms the core of Odoo’s reconciliation engine together with account.full.reconcile.

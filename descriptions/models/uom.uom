@@ -1,0 +1,37 @@
+Defines all measurable units (pieces, kg, liters, hours, boxes, etc.) and their conversion rules between units in the same category.
+Key Functional Use Cases:
+
+Product sales, purchase, and inventory in different units
+Automatic unit conversion on orders, deliveries, and BOMs
+Pricing per unit (e.g. sell by box, buy by kg)
+Recipe / BOM quantities with different UoMs
+Invoicing and reporting in preferred units
+Time tracking (hours, days) and service products
+Packaging and logistics units
+
+Technical DNA:
+
+Model Type: models.Model (persistent, core)
+Key Fields:
+name (char, required), category_id → uom.category (required)
+uom_type (reference / bigger / smaller)
+factor, factor_inv (conversion ratio)
+rounding (float, e.g. 0.01)
+active, company_id
+measure_type (unit / weight / volume / time / etc.)
+
+Critical Hooks: onchange_category_id, _compute_factor, conversion engine (_compute_quantity)
+Security: Generally read-access for all, write restricted to settings managers
+
+RAG Routing Keywords:
+unit of measure, uom, uom.uom, measure unit, conversion unit, pieces, kg, liter, box, pack, hour, unit category, uom category, measurement unit
+Related Models (most joined):
+
+uom.category (parent category)
+product.template / product.product (uom_id, uom_po_id)
+sale.order.line, purchase.order.line, stock.move
+mrp.bom.line
+account.move.line
+
+Ultra-Dense Vector Paragraph:
+uom.uom is Odoo’s Unit of Measure model that stores units with name, category_id, conversion factor, rounding, and type (bigger/smaller/reference). It enables automatic quantity conversion across sales, purchase, inventory, manufacturing, and accounting, and is referenced on almost every product and transactional line in the system.

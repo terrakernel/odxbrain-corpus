@@ -1,0 +1,39 @@
+Represents one opened cash register / POS terminal session (a work shift), controlling all sales, payments, and cash movements until it is closed.
+Key Functional Use Cases:
+
+Open a new POS session (cash count at start)
+Record all POS orders and payments during the session
+Cash control (opening balance, transactions, expected vs counted closing balance)
+Session closing with Z-report and cash register reconciliation
+Multi-session / multi-cashier operations
+Handle temporary session interruptions and recovery
+Generate closing journal entries and bank deposits
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (sequenced), config_id → pos.config (required)
+user_id, start_at, stop_at
+state (opening_control / opened / closing_control / closed / pending)
+cash_register_balance_start, cash_register_balance_end_real, cash_register_total_entry_encoding
+One2many: order_ids → pos.order
+One2many: payment_ids → pos.payment (or statement lines)
+rescue (boolean for recovery sessions)
+
+Critical Hooks: action_pos_session_open, action_pos_session_closing_control, action_pos_session_validate, _compute_cash_balance, button_confirm_cash
+Security: point_of_sale.group_pos_user + strict session ownership rules
+
+RAG Routing Keywords:
+POS session, point of sale session, cash register session, pos shift, session opening, session closing, Z report, cash control, opening balance, closing balance, POS cash count, pos reconciliation, session validation, open session, closed session, session state, in progress session, posted session
+Related Models (most joined):
+
+pos.config (parent configuration)
+pos.order (all orders in session)
+pos.payment
+account.bank.statement (via cash moves)
+account.move (closing entries)
+res.user (cashier)
+
+Ultra-Dense Vector Paragraph:
+pos.session is the Odoo model representing a live Point of Sale session linked to pos.config, with state (opening/opened/closing/closed), opening/closing cash balances, and containing all pos.order and payments for that shift. It manages cash control, session validation, Z-report generation, and automatic creation of accounting entries at closing, serving as the operational bridge between POS frontend transactions and backend accounting & inventory.

@@ -1,0 +1,39 @@
+Defines a complete physical warehouse (or branch) with its locations, operation types, routes, and default settings for all inventory operations.
+Key Functional Use Cases:
+
+Multi-warehouse management (main warehouse, regional branches, virtual warehouses)
+Automatic creation of location hierarchy (Stock, Input, Quality, Output, etc.)
+Default picking types (Receipts, Deliveries, Internal Transfers)
+Warehouse-specific routes and replenishment rules
+Inter-warehouse transfers and transit locations
+Warehouse address and responsible user
+Reporting: stock by warehouse, performance metrics
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, required), code (short code, e.g. WH)
+company_id (required), partner_id → res.partner (address)
+lot_stock_id → stock.location (main stock location)
+One2many: wh_input_stock_loc_id, wh_output_stock_loc_id, wh_qc_stock_loc_id, etc.
+One2many: picking_type_ids → stock.picking.type
+route_ids (Many2many), default_resupply_wh_id (for inter-warehouse)
+sequence_id, manu_type_id, crossdock_route_id
+
+Critical Hooks: create (auto-generates locations and picking types), onchange_company_id, _get_routes
+Security: stock.group_stock_manager + company rules
+
+RAG Routing Keywords:
+warehouse, stock.warehouse, main warehouse, physical warehouse, WH, multi warehouse, warehouse code, warehouse location, stock warehouse, branch warehouse, distribution center
+Related Models (most joined):
+
+stock.location (lot_stock_id + child locations)
+stock.picking.type (operation types)
+stock.route / stock.rule
+res.company
+res.partner (address)
+stock.picking, stock.quant, product.product (via locations)
+
+Ultra-Dense Vector Paragraph:
+stock.warehouse is Odoo’s main warehouse configuration model defining a complete warehouse with code, company, address, main stock location (lot_stock_id), and automatic generation of locations + picking types. It controls all warehouse-specific operations, routes, multi-warehouse flows, and serves as the top-level container for inventory structure across Sales, Purchase, Manufacturing, and Inventory modules.

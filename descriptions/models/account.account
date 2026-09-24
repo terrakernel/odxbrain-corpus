@@ -1,0 +1,38 @@
+Stores every General Ledger account in the Chart of Accounts used for financial posting, reporting, and trial balance.
+Key Functional Use Cases:
+
+Define Asset, Liability, Equity, Income, Expense, and View accounts
+Control automatic tax, analytic, and deferral postings
+Build P&L and Balance Sheet structures via account types and groups
+Used in Journal Entries, Invoices, Payments, Bank Statements, and Asset depreciation
+Reconciliation and financial reporting engine foundation
+
+Technical DNA:
+
+Model Type: models.Model (regular persistent)
+Key Fields:
+code (char, required, unique) – account number (e.g. 110100)
+name (char, required)
+user_type_id → account.account.type (most important relational field)
+reconcile (boolean), deprecated (boolean)
+group_id, root_id, company_id
+tag_ids (Many2many), allowed_journal_ids
+Computed: opening_balance, current_balance (via SQL views)
+
+Critical Hooks: _check_account_code, onchange_user_type_id, action_open_reconcile
+Inheritance: Sometimes extended with l10n_* modules
+Security: account.group_account_manager + record rules per company
+
+RAG Routing Keywords:
+chart of accounts, general ledger account, account code, account type, posting account, reconcile account, P&L account, balance sheet account, ledger account, account 101000, natural account, gl account, financial account structure, accounting chart, account chart, accounting plan, COA, nominal ledger, account master data, account hierarchy, account list, general ledger structure, accounting code list
+Related Models (most joined):
+
+account.account.type
+account.journal
+account.move.line (via account_id)
+account.group
+res.company
+account.tax
+
+Ultra-Dense Vector Paragraph:
+account.account is the core Odoo model that holds the complete Chart of Accounts with code, name, user_type_id, reconcile flag, and company-specific ledger accounts used for all financial postings. It drives journal entry validation, automatic account selection on invoices/payments, trial balance, P&L, balance sheet, and reconciliation. Central to accounting module, heavily referenced by account.move.line, account.journal, and l10n localization modules.

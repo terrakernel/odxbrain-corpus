@@ -1,0 +1,40 @@
+Main transactional document for requesting and ordering goods/services from suppliers (RFQ → Purchase Order), managing the full procurement lifecycle.
+Key Functional Use Cases:
+
+Create RFQs and convert to Purchase Orders
+Manage multi-line purchases with prices, taxes, and delivery dates
+Handle approvals, vendor confirmations, and order updates
+Generate incoming shipments (stock.picking)
+Vendor bills matching (3-way matching)
+Purchase agreements / blanket orders / call for tenders
+Reporting: purchase analysis, spend by supplier, on-time delivery
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (sequenced: POxxxx / RFxxxx), state (draft/sent/to_approve/purchase/done/cancel)
+partner_id → res.partner (supplier, required)
+date_order, date_planned, requisition_id
+amount_untaxed, amount_tax, amount_total
+One2many: order_line → purchase.order.line
+picking_ids, invoice_ids (Many2many)
+fiscal_position_id, payment_term_id, incoterm_id
+
+Critical Hooks: button_confirm, button_approve, action_create_invoice, _create_picking, onchange_partner_id
+Security: purchase.group_purchase_manager + company + own documents rules
+
+RAG Routing Keywords:
+purchase order, PO, RFQ, request for quotation, vendor order, supplier order, procurement order, purchase requisition, blanket order, purchase agreement, vendor purchase, purchase confirmation, draft RFQ, sent RFQ, confirmed purchase order, pending purchase, awaiting receipt, to receive, cancelled purchase order, purchase status, purchase order state
+Related Models (most joined):
+
+purchase.order.line (child lines — most important)
+res.partner (supplier)
+product.product / product.template
+stock.picking (receipts)
+account.move (vendor bills)
+purchase.requisition
+stock.warehouse
+
+Ultra-Dense Vector Paragraph:
+purchase.order is Odoo’s core procurement model representing RFQs and Purchase Orders with supplier, order lines, totals, state, and planned dates. It drives supplier confirmation, incoming stock moves, vendor bill creation, 3-way matching, and full integration between Purchase, Inventory, and Accounting modules.

@@ -1,0 +1,41 @@
+Stores every cost layer (inbound quantity + unit cost) of a product in a specific location, enabling precise perpetual inventory valuation using FIFO, Average, or Standard costing.
+Key Functional Use Cases:
+
+Perpetual stock valuation (real-time accounting value)
+FIFO costing (oldest layers consumed first)
+Average costing (weighted average recalculation)
+Cost price updates on receipts, production, and adjustments
+Inventory value on Balance Sheet
+COGS (Cost of Goods Sold) calculation on delivery/invoice
+Stock revaluation and price difference handling
+Audit trail of every cost change
+
+Technical DNA:
+
+Model Type: models.Model (persistent, high-performance, immutable style)
+Key Fields:
+product_id → product.product (required)
+company_id, location_id → stock.location
+quantity (float), remaining_qty (float)
+unit_cost (monetary), value (monetary)
+stock_move_id → stock.move (source move)
+stock_valuation_layer_id (parent layer for adjustments)
+description, create_date
+Computed: remaining_value
+
+Critical Hooks: create, _svl_reduce, _svl_recompute, action_reset_stock_valuation
+Security: stock.group_stock_manager + strict company rules (very protected)
+
+RAG Routing Keywords:
+stock valuation layer, valuation layer, svl, stock cost layer, fifo layer, average cost layer, inventory value layer, cost layer, perpetual valuation, stock.valuation.layer, cogs layer, unit cost layer
+Related Models (most joined):
+
+product.product (via product_id)
+stock.move (via stock_move_id)
+stock.quant
+account.move.line (via stock valuation → accounting)
+stock.location
+stock.valuation.layer (parent/child for revaluations)
+
+Ultra-Dense Vector Paragraph:
+stock.valuation.layer is Odoo’s perpetual costing engine model that records every inbound stock layer with quantity, unit_cost, value, and remaining_qty for a product_id in a location. It powers accurate FIFO/Average costing, real-time inventory valuation, COGS calculation, and automatic generation of accounting entries on stock moves, making it the core of Odoo’s modern Inventory + Accounting integration.

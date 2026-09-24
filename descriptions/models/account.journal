@@ -1,0 +1,38 @@
+Defines the different journals (Sales, Purchase, Cash, Bank, General, etc.) that control how journal entries are created, posted, and numbered in the accounting system.
+Key Functional Use Cases:
+
+Sales journal, Purchase journal, Cash journal, Bank journal
+Bank & Cash management (reconciliation source)
+Miscellaneous / General journal for manual adjustments
+Control default accounts, sequences, and posting restrictions
+Multi-company, multi-currency, and type-specific behavior
+Used in invoices, payments, bank statements, and asset depreciation
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (char, required), code (char, required, unique per company)
+type (selection: sale, purchase, cash, bank, general, opening, closing…)
+default_account_id, payment_credit_account_id, payment_debit_account_id
+sequence_id → ir.sequence (for entry numbering)
+company_id, currency_id
+bank_account_id (for bank journals)
+post_at (bank statements), refund_sequence
+
+Critical Hooks: action_create_bank_statements, _get_journal_dashboard, onchange_type
+Security: account.group_account_manager + journal-specific record rules
+
+RAG Routing Keywords:
+journal, accounting journal, sales journal, purchase journal, bank journal, cash journal, general journal, journal code, journal type, journal entry source, posting journal, misc journal, journal sequence
+Related Models (most joined):
+
+account.account (default accounts)
+account.move (via journal_id)
+account.bank.statement
+account.payment
+ir.sequence
+res.bank / res.partner.bank
+
+Ultra-Dense Vector Paragraph:
+account.journal is the core Odoo model defining accounting journals with type (sale/purchase/bank/cash/general), code, default accounts, sequence, and company settings. It controls journal entry creation, automatic numbering, default accounts on invoices/payments, bank reconciliation, and posting behavior across the entire accounting module. Heavily referenced by account.move, account.payment, account.bank.statement, and all financial workflows.

@@ -1,0 +1,40 @@
+Defines the types of warehouse operations (Receipts, Deliveries, Internal Transfers, Manufacturing, etc.) and controls their behavior, default locations, sequences, and routing rules.
+Key Functional Use Cases:
+
+Configure Incoming Receipts (from suppliers)
+Configure Outgoing Deliveries (to customers)
+Internal Transfers and inter-warehouse movements
+Manufacturing / Production operations
+Returns, Scrap, Inventory Adjustments
+Multi-step processes (2-step / 3-step receipt & delivery)
+Barcode operations and putaway strategies per type
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, required), sequence_code (e.g. WH/IN, WH/OUT)
+code (incoming/outgoing/internal/manufacturing)
+warehouse_id → stock.warehouse
+default_location_src_id, default_location_dest_id
+sequence_id → ir.sequence
+use_create_lots, use_existing_lots, show_entire_packs
+reservation_method, auto_confirm, auto_assign
+return_picking_type_id
+
+Critical Hooks: onchange_warehouse_id, _get_action_picking_tree, routing engine integration
+Security: stock.group_stock_manager + warehouse/company rules
+
+RAG Routing Keywords:
+operation type, picking type, stock.picking.type, warehouse operation, receipt type, delivery type, internal transfer type, WH/IN, WH/OUT, picking sequence, receipt operation, delivery operation
+Related Models (most joined):
+
+stock.picking (via picking_type_id — most important)
+stock.warehouse
+stock.location (default src/dest)
+stock.rule (routes)
+stock.move
+ir.sequence
+
+Ultra-Dense Vector Paragraph:
+stock.picking.type is Odoo’s configuration model that defines warehouse operation types (Receipts, Deliveries, Internal, Manufacturing) with code, default locations, sequences, and behavior settings. It controls how stock.picking documents are created, numbered, and processed, and serves as the central configuration hub for all inventory movements, multi-step routes, and warehouse processes.

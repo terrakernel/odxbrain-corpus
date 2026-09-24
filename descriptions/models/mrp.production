@@ -1,0 +1,39 @@
+Main document that executes the production of a finished product or sub-assembly based on a Bill of Materials (BOM), managing the full lifecycle from planning to completion.
+Key Functional Use Cases:
+
+Launch production orders from sales orders, forecasts, or manually
+Consume raw materials and produce finished goods
+Split production into work orders per operation
+Track production progress, scrap, and by-products
+Automatic reservation and replenishment of components
+Costing of production (real vs standard)
+Mass production, rework, and unplanned orders
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (sequenced), product_id / product_tmpl_id
+bom_id → mrp.bom, product_qty, qty_produced, qty_producing
+state (draft/confirmed/planned/progress/done/cancel)
+date_planned_start, date_planned_finished, date_deadline
+One2many: move_raw_ids (component consumption), move_finished_ids, workorder_ids
+lot_producing_id, origin (sales order link)
+
+Critical Hooks: action_confirm, button_mark_done, _generate_workorders, action_assign, _compute_cost, do_unreserve
+Security: mrp.group_mrp_manager + company + warehouse rules
+
+RAG Routing Keywords:
+manufacturing order, production order, MO, mrp.production, work order, produce, manufacturing execution, production planning, BOM production, finished goods production, production confirmation, production done, workcenter production, planned production, in progress, to produce, pending manufacturing order, late production, cancelled MO, production status, manufacturing order state
+Related Models (most joined):
+
+mrp.bom & mrp.bom.line
+mrp.workorder (child operations)
+stock.move (raw & finished moves)
+product.product
+sale.order (via origin)
+mrp.workcenter
+stock.warehouse / stock.location
+
+Ultra-Dense Vector Paragraph:
+mrp.production is Odoo’s core Manufacturing Order model that executes production using a BOM, with product_id, product_qty, state, planned dates, and links to move_raw_ids, move_finished_ids, and workorder_ids. It drives component reservation & consumption, work order generation, finished goods receipt, production costing, and full integration between Manufacturing, Inventory, and Sales modules.

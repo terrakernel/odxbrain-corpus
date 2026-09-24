@@ -1,0 +1,41 @@
+Records every completed sale made at the Point of Sale (POS), acting as the transactional document that moves stock, creates accounting entries, and stores the full order details.
+Key Functional Use Cases:
+
+Customer retail sales and restaurant orders
+Immediate or deferred invoicing from POS
+Refund / return orders
+Multi-payment handling (cash, card, voucher, etc.)
+Kitchen printing, bill splitting, and table management (restaurant)
+Loyalty points, discounts, and promotions at checkout
+Daily sales reporting and Z-report (session closing)
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (sequenced), pos_reference
+session_id → pos.session (required)
+date_order, state (draft / paid / done / cancelled / invoiced)
+partner_id, amount_total, amount_tax
+One2many: lines → pos.order.line
+payment_ids → pos.payment
+invoice_id → account.move (when invoiced)
+pricelist_id, fiscal_position_id
+
+Critical Hooks: action_pos_order_paid, create_from_ui, _create_account_move, action_return, button_refund
+Security: point_of_sale.group_pos_user + session/company rules
+
+RAG Routing Keywords:
+POS order, point of sale order, pos ticket, pos receipt, pos transaction, retail sale, pos sale, pos order line, cash register order, restaurant order, pos payment, pos invoice, pos refund
+Related Models (most joined):
+
+pos.order.line (child lines)
+pos.session (parent session)
+pos.payment
+account.move (invoiced)
+stock.picking (via order lines)
+res.partner
+pos.config
+
+Ultra-Dense Vector Paragraph:
+pos.order is the central Odoo POS transactional model that records every sale with session_id, date_order, lines, payments, total, and state. It triggers stock moves, journal entries (account.move), partner receivables, and invoicing. It serves as the bridge between the POS frontend and backend modules (Inventory, Accounting, Sales) for all retail and restaurant operations.

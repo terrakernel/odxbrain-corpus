@@ -1,0 +1,40 @@
+Stores the detailed execution of a stock movement, especially quantities per Lot / Serial Number / Package, and records the actual “done” quantity during picking or inventory operations.
+Key Functional Use Cases:
+
+Detailed picking with lot/serial number assignment
+Partial moves and split quantities
+Inventory adjustments with lots
+Package level operations (put in pack)
+Production component consumption with lots
+Quality control and traceability
+Returns and scrap with lot tracking
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+move_id → stock.move (parent)
+product_id → product.product
+qty_done (float), reserved_uom_qty / reserved_qty
+lot_id → stock.lot (critical for traceability)
+package_id, result_package_id (for packaging)
+location_id, location_dest_id
+owner_id, company_id
+state (inherited from move)
+
+Critical Hooks: _action_done, write (qty_done updates), _update_reserved_quantity, lot assignment logic, _check_company
+Security: Inherited from stock.move + stock.group_stock_user
+
+RAG Routing Keywords:
+stock move line, move line, detailed stock move, picking line, lot move, serial move, qty_done, stock.move.line, lot assignment, package move, inventory line detail, traced move
+Related Models (most joined):
+
+stock.move (parent)
+stock.lot / stock.production.lot (lot_id)
+stock.quant (source & destination)
+stock.picking
+stock.package
+product.product
+
+Ultra-Dense Vector Paragraph:
+stock.move.line is the execution-level child model of stock.move that records actual qty_done per lot_id, serial, or package for every stock movement. It enables precise traceability, lot/serial tracking, partial picking, packaging operations, and updates stock.quant in real time. Essential for advanced warehouse, manufacturing, and quality processes in Odoo Inventory.

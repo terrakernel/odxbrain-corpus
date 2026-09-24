@@ -1,0 +1,35 @@
+Stores historical and current exchange rates between currencies, enabling accurate multi-currency conversions at specific dates.
+Key Functional Use Cases:
+
+Daily / manual exchange rate updates
+Automatic rate fetching from external providers (ECB, Yahoo, etc.)
+Date-specific conversions for invoices, payments, journal entries, and bank statements
+Historical rate lookup for reporting and revaluation
+Multi-company rate management
+Currency gain/loss calculation on reconciliation and payments
+
+Technical DNA:
+
+Model Type: models.Model (persistent, lightweight)
+Key Fields:
+name (date, required) – the rate date
+currency_id → res.currency (required)
+rate (float, required) – rate against company currency (e.g. 1 USD = 15,800 IDR)
+company_id (optional — allows different rates per company)
+inverse_company_rate / rate (computed inverses)
+
+Critical Hooks: _compute_rate, create, rate uniqueness constraint per (currency, date, company)
+Security: account.group_account_manager for write access
+
+RAG Routing Keywords:
+currency rate, exchange rate, forex rate, currency conversion rate, res.currency.rate, rate history, historical rate, exchange rate on date, rate update, currency revaluation, daily rate
+Related Models (most joined):
+
+res.currency (parent)
+res.company (company currency)
+account.move.line (via currency_id + date)
+account.payment, account.bank.statement.line
+sale.order, purchase.order, pos.order
+
+Ultra-Dense Vector Paragraph:
+res.currency.rate is the child model of res.currency that stores dated exchange rates (name=date, rate value, currency_id, company_id). It powers all multi-currency conversions, automatic rate application on documents, historical lookups, currency gain/loss entries, and revaluation processes throughout Odoo accounting, sales, purchase, and reporting.

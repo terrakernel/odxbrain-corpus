@@ -1,0 +1,42 @@
+Stores imported or manually entered bank statements with lines for reconciling bank transactions against the company’s accounting records.
+Key Functional Use Cases:
+
+Import bank statements (CSV, OFX, QIF, CAMT, etc.)
+Manual entry of daily bank transactions
+Bank reconciliation (match statement lines with journal items)
+Handle fees, interest, direct debits, and transfers
+Cash management and daily cash position
+Multi-currency bank accounts and foreign currency gain/loss
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (char, sequenced), journal_id (→ account.journal, required)
+date (date), balance_start, balance_end_real, balance_end
+state (selection: open / posted / confirm)
+One2many: line_ids → account.bank.statement.line
+currency_id, company_id
+Computed: total_amount, difference
+
+Critical Hooks:
+button_post, button_validate, action_reconcile
+_compute_balance_end, reconcile_bank_line
+import wizards heavily linked
+
+Security: account.group_account_manager + bank journal access rules
+Workflow: Open → Posted → Reconciled; strong integration with account.payment and account.move
+
+RAG Routing Keywords:
+bank statement, bank reconciliation, statement line, reconcile bank, imported statement, bank feed, cash book, bank balance, statement import, CODA, MT940, CAMT.053, bank extract, unreconciled transaction
+Related Models (most joined):
+
+account.bank.statement.line (main child)
+account.journal (bank journal)
+account.move.line (via reconciliation)
+account.payment
+res.partner (for counterpart)
+account.account (liquidity account)
+
+Ultra-Dense Vector Paragraph:
+account.bank.statement holds complete bank statements linked to a bank journal with starting/ending balance, statement lines, and reconciliation status. It is the core model for bank statement import, manual entry, automatic reconciliation with journal items or payments, and daily cash management. Heavily used together with account.bank.statement.line, account.journal, and account.move.line for full bank reconciliation flow in Odoo accounting.

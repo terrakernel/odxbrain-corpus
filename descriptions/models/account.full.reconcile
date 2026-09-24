@@ -1,0 +1,37 @@
+Groups one or more partial reconciliations to represent a complete, balanced reconciliation between debit and credit journal items (e.g., invoice fully paid, bank line fully matched).
+Key Functional Use Cases:
+
+Mark invoices, bills, payments, or bank lines as fully reconciled
+Link multiple partial payments to one invoice (or vice-versa)
+Handle multi-currency full reconciliation with exchange rate gains/losses
+Provide audit trail for complete matching of accounting entries
+Used in reconciliation widget, aged receivables/payables, and financial reports
+Cleanup of residual amounts when fully reconciled
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, sequenced)
+partial_reconcile_ids → One2many to account.partial.reconcile
+move_line_ids → Many2many to account.move.line (all reconciled lines)
+currency_id, company_id
+exchange_move_id (for forex gain/loss journal entry)
+Computed: amount, reconciled_line_ids
+
+Critical Hooks: create, _unlink_reconcile, action_open_reconcile
+No direct state — existence of the record = fully reconciled
+Security: Controlled via account.group_account_manager and move line rules
+
+RAG Routing Keywords:
+full reconcile, full reconciliation, complete reconciliation, fully reconciled, reconciled in full, reconciliation group, account.full.reconcile, residual cleared, zero residual, invoice fully paid, payment fully applied, matched completely
+Related Models (most joined):
+
+account.partial.reconcile (child lines)
+account.move.line (via move_line_ids)
+account.move / account.payment / account.bank.statement.line
+account.account (through move lines)
+res.currency (for exchange differences)
+
+Ultra-Dense Vector Paragraph:
+account.full.reconcile is the Odoo model that represents a complete balanced reconciliation by grouping multiple account.partial.reconcile records and linking all involved account.move.line with zero residual amount. It is created automatically when an invoice is fully paid, a bank statement line is fully matched, or manual reconciliation is completed, and handles multi-currency exchange differences. Core to Odoo’s reconciliation engine, audit trail, and financial closing processes.

@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 TerraKernel Pte Ltd
+# SPDX-License-Identifier: 0BSD
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 tools/check_corpus.py

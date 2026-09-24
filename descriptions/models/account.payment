@@ -1,0 +1,41 @@
+Records customer receipts and vendor payments, linking them to invoices/bills and generating the corresponding journal entries.
+Key Functional Use Cases:
+
+Register manual or batch customer payments / vendor payments
+Apply payments to one or multiple invoices (partial or full)
+Bank transfer, cash, check, credit card payments
+Payment reconciliation with bank statements
+Refunds and payment returns
+Payment registers and payment reports
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+payment_type (inbound/outbound)
+partner_type (customer/supplier)
+partner_id, amount (monetary), currency_id
+journal_id → account.journal (required)
+payment_method_id, payment_method_line_id
+date, state (draft/posted/sent/reconciled/cancelled)
+move_id → account.move (the journal entry it creates)
+reconciled_invoice_ids / reconciled_bill_ids (Many2many)
+ref, communication
+
+Critical Hooks: action_post, action_draft, do_reconcile, _create_payment_entry, onchange_journal_id, compute_payment_difference
+Security: account.group_account_user + company + journal rules
+
+RAG Routing Keywords:
+payment, customer payment, vendor payment, receipt, pay invoice, register payment, payment entry, inbound payment, outbound payment, payment reconciliation, payment journal, mass payment, payment register, draft payment, posted payment, reconciled payment, unreconciled payment, sent payment, payment state
+Related Models (most joined):
+
+account.move (created journal entry)
+account.move.line (payment lines)
+account.journal
+res.partner
+account.bank.statement.line
+account.invoice (legacy) / reconciled moves
+account.payment.method
+
+Ultra-Dense Vector Paragraph:
+account.payment is Odoo’s main model for recording inbound (customer) and outbound (vendor) payments with amount, journal, partner, payment method, and state. It automatically creates and posts account.move + account.move.line, handles multi-invoice allocation, partial payments, and reconciliation with bank statements. Central to the payment workflow and tightly integrated with accounting, bank, and invoicing modules.

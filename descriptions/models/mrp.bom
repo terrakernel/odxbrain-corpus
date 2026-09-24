@@ -1,0 +1,39 @@
+Defines the list of components, raw materials, quantities, and operations required to manufacture a finished product or sub-assembly.
+Key Functional Use Cases:
+
+Single-level and multi-level BOMs
+Production planning and material requirement planning (MRP)
+Cost calculation of finished goods
+Engineering changes and version control
+Phantom / modular BOMs (kit assembly)
+By-products and co-products management
+Used by Manufacturing Orders, Work Orders, and MRP scheduler
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+product_tmpl_id / product_id (the finished product)
+code (reference), type (normal / phantom / kits)
+version (for engineering BOM versioning)
+bom_line_ids → One2many to mrp.bom.line (components)
+operation_ids → One2many to mrp.routing.workcenter (operations)
+ready_to_produce (selection), consumption (flexible / strict)
+company_id, active
+
+Critical Hooks: onchange_product_id, _compute_total_cost, action_compute_bom_cost, explosion logic (_bom_explode)
+Security: mrp.group_mrp_manager + company rules
+
+RAG Routing Keywords:
+bill of materials, BOM, BOM structure, manufacturing BOM, product recipe, component list, multi-level BOM, phantom BOM, kit BOM, production BOM, engineering BOM, mrp.bom, BOM line, routing
+Related Models (most joined):
+
+mrp.bom.line (child components)
+product.product / product.template
+mrp.routing.workcenter / mrp.workcenter
+mrp.production (manufacturing order)
+mrp.workorder
+stock.warehouse
+
+Ultra-Dense Vector Paragraph:
+mrp.bom is Odoo’s core Bill of Materials model that defines how a product is manufactured with product_tmpl_id, type (normal/phantom), version, bom_line_ids (components with qty), and operation_ids. It powers BOM explosion, material requirements planning, production costing, multi-level structures, and is the foundation of the entire Manufacturing (MRP) module, tightly integrated with inventory, work orders, and production orders.

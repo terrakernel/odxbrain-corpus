@@ -1,0 +1,40 @@
+Defines all physical and virtual places where stock is stored, moved, or counted — the backbone of Odoo’s inventory and warehouse structure.
+Key Functional Use Cases:
+
+Warehouse structure (WH/Stock, WH/Stock/Shelf01, etc.)
+Internal locations, supplier/customer locations, inventory loss, production, transit
+Multi-warehouse and multi-step routing (MTO, dropship, cross-dock)
+Stock valuation and accounting (valuation accounts per location)
+Putaway, removal, and replenishment strategies
+Physical inventory counts and cycle counts
+Scrap, production, and quality control locations
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, required), complete_name (computed)
+location_id → stock.location (parent, hierarchical)
+usage (selection: internal, customer, supplier, inventory, production, transit, view)
+company_id, warehouse_id → stock.warehouse
+active, scrap_location, return_location
+property_stock_valuation_account_id, property_stock_account_input, property_stock_account_output
+removal_strategy_id (FIFO/LIFO/FEFO), putaway_strategy_ids
+
+Critical Hooks: _compute_complete_name, _check_location_recursion, onchange_company_id
+Security: stock.group_stock_manager + company + location-based record rules
+
+RAG Routing Keywords:
+stock location, inventory location, warehouse location, internal location, stock shelf, stock bin, storage location, customer location, supplier location, transit location, virtual location, stock.warehouse location, putaway location
+Related Models (most joined):
+
+stock.warehouse (via warehouse_id)
+stock.quant (stock levels per location)
+stock.move (location_id, location_dest_id)
+stock.picking
+product.product (via quants)
+stock.location.route
+stock.rule
+
+Ultra-Dense Vector Paragraph:
+stock.location is Odoo’s hierarchical model defining every storage place with usage (internal/customer/supplier/production/transit), parent location, warehouse, valuation accounts, and strategies. It controls stock movements (stock.move), real-time quantities (stock.quant), putaway/removal logic, multi-warehouse operations, and accounting postings across Inventory, Manufacturing, Sales, and Purchase modules.

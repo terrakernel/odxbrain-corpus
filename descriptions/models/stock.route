@@ -1,0 +1,38 @@
+Defines product flow paths (rules for procurement and movement) such as Buy, Manufacture, Dropship, Make-to-Order, Make-to-Stock, etc., controlling how a product is sourced, produced, or delivered.
+Key Functional Use Cases:
+
+Configure replenishment strategies (MTS / MTO)
+Dropshipping and cross-docking
+Multi-step warehouse routes (2-step / 3-step receipt & delivery)
+Inter-warehouse transfers and push/pull rules
+Manufacturing + procurement combined flows
+Apply different routes per product, category, warehouse, or sales order line
+Global vs company-specific routing logic
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, required), active, company_id
+sequence (ordering)
+rule_ids → One2many to stock.rule (most important child)
+product_selectable (can be chosen on product), warehouse_selectable
+supplied_by / supplied_wh_id (for inter-warehouse)
+sale_selectable, picking_type_id (default)
+
+Critical Hooks: _pull, _push, route application engine (stock.rule matching)
+Security: stock.group_stock_manager + company rules
+
+RAG Routing Keywords:
+stock route, route, replenishment route, procurement route, product route, dropship route, MTO route, MTS route, buy route, manufacture route, warehouse route, stock.route, supply route
+Related Models (most joined):
+
+stock.rule (child rules — critical)
+product.template / product.product (route_ids Many2many)
+stock.warehouse
+stock.picking.type
+stock.location
+mrp.bom, purchase.order, sale.order.line
+
+Ultra-Dense Vector Paragraph:
+stock.route is Odoo’s routing engine model that defines complete product flows with name and multiple stock.rule records (pull/push). It controls how products are procured (buy/manufacture), moved (MTO/MTS/dropship), and delivered across warehouses. Applied via Many2many on product.template and used by the procurement scheduler to generate stock moves, purchase orders, and manufacturing orders.

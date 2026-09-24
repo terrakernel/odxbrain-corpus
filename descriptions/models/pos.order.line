@@ -1,0 +1,41 @@
+Search-Dense Summary – pos.order.line (Point of Sale Order Line)
+Core Purpose (1-line functional):
+Represents each individual product/item sold in a POS order, containing quantity, unit price, discount, taxes, and the data needed to generate stock moves and accounting lines.
+Key Functional Use Cases:
+
+Record every item in a POS ticket (retail or restaurant)
+Apply discounts, price overrides, and taxes at line level
+Trigger stock deduction via stock moves
+Support modifiers, combo products, and restaurant order notes
+Enable refunds/returns at line level
+Used for sales reporting, product profitability, and daily Z-reports
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+order_id → pos.order (required, parent)
+product_id → product.product
+qty (float), price_unit (monetary), discount (float %)
+tax_ids (Many2many)
+full_product_name, note (for kitchen/receipt)
+mp_skip (skip kitchen printing), combo_line_ids (for combos)
+Computed: price_subtotal, price_subtotal_incl
+order_line_uid (frontend unique ID)
+
+Critical Hooks: create, _compute_amount, action_refund, _prepare_stock_move
+Security: Inherited from parent pos.order + POS user rights
+
+RAG Routing Keywords:
+POS order line, pos line, point of sale item, pos ticket line, pos product line, pos order detail, pos receipt line, sold item, pos quantity, pos discount line, kitchen order line, pos refund line
+Related Models (most joined):
+
+pos.order (parent)
+product.product
+pos.payment
+account.move.line (via invoicing)
+stock.move (generated from lines)
+pos.order.line (for combo/children)
+
+Ultra-Dense Vector Paragraph:
+pos.order.line is the child model of pos.order storing each sold item with product_id, qty, price_unit, discount, tax_ids, and full_product_name. It drives stock consumption (stock.move), accounting lines in account.move, tax calculation, and detailed sales reporting for all Point of Sale transactions in Odoo.

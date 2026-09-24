@@ -1,0 +1,41 @@
+Main operational document that groups one or more stock moves for a complete warehouse process — Incoming Receipt, Customer Delivery, Internal Transfer, Manufacturing, etc.
+Key Functional Use Cases:
+
+Supplier Receipts (from Purchase Orders)
+Customer Deliveries (from Sales Orders)
+Internal transfers between locations/warehouses
+Manufacturing component consumption & finished goods receipt
+Returns, scrap, inventory adjustments
+Batch picking, wave picking, and put-away
+Multi-step operations (2-step / 3-step receipt/delivery)
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread + activity.mixin)
+Key Fields:
+name (sequenced: WH/OUT/xxxx, WH/IN/xxxx), picking_type_id → stock.picking.type
+state (draft/confirmed/assigned/done/cancel)
+partner_id, scheduled_date, date_done
+origin (SO/PO reference), group_id
+One2many: move_ids → stock.move (main child)
+One2many: move_line_ids → stock.move.line
+location_id, location_dest_id
+backorder_id, return_id
+
+Critical Hooks: action_confirm, action_assign, button_validate, _action_done, action_generate_backorder
+Security: stock.group_stock_user + picking type + location rules
+
+RAG Routing Keywords:
+stock picking, warehouse picking, delivery order, goods receipt, incoming shipment, outgoing shipment, internal transfer, stock operation, picking document, WH/IN, WH/OUT, picking list, validate picking, pending delivery, ready to transfer, waiting availability, not yet delivered, undelivered, backorder, shipped, done transfer, draft transfer, cancelled picking, late delivery, picking status
+Related Models (most joined):
+
+stock.picking.type (operation type)
+stock.move (main lines)
+stock.move.line (detailed lots)
+sale.order / purchase.order (origin)
+res.partner
+stock.warehouse, stock.location
+stock.quant
+
+Ultra-Dense Vector Paragraph:
+stock.picking is Odoo’s main warehouse document model representing a complete picking operation (receipt, delivery, internal transfer) with picking_type_id, move_ids, move_line_ids, state, and scheduled_date. It groups stock moves, controls validation, reservations, backorders, and serves as the operational bridge between Sales, Purchase, Manufacturing, and Inventory modules.

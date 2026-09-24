@@ -1,0 +1,37 @@
+Stores all currencies used in the system with their symbols, rounding, and exchange rates for multi-currency transactions and reporting.
+Key Functional Use Cases:
+
+Multi-currency accounting, sales, purchases, and payments
+Automatic or manual exchange rate updates
+Currency conversion in journal entries, invoices, bank statements, and reports
+Price lists and product pricing in foreign currencies
+Bank accounts and payment reconciliation in foreign currency
+Financial reporting (P&L, Balance Sheet) with currency translation
+Localization and legal reporting requirements
+
+Technical DNA:
+
+Model Type: models.Model (persistent, core)
+Key Fields:
+name (char, e.g. "USD"), symbol, full_name
+rounding (float, usually 0.01), decimal_places
+active, position (before/after)
+rate_ids → One2many to res.currency.rate
+company_id (for company-specific currencies)
+Computed: rate (current rate vs company currency)
+
+Critical Hooks: _compute_rate, compute, _get_conversion_rate, rate update wizards
+Security: Usually read access for all users, write restricted to accounting managers
+
+RAG Routing Keywords:
+currency, res.currency, exchange rate, foreign currency, multi currency, currency rate, base currency, company currency, rate update, currency conversion, USD, EUR, IDR, forex rate
+Related Models (most joined):
+
+res.currency.rate (child rates — most important)
+res.company (currency_id)
+account.move, account.move.line (currency_id, amount_currency)
+account.payment, pos.order, sale.order
+product.pricelist
+
+Ultra-Dense Vector Paragraph:
+res.currency is Odoo’s core currency model storing name, symbol, rounding, position, and current exchange rates. It enables multi-currency operations across accounting, sales, purchase, inventory, and POS, with automatic conversion, rate history via res.currency.rate, and is referenced on almost every monetary document and report in the system.

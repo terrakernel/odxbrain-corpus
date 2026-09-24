@@ -1,0 +1,40 @@
+Stores all system users who can log into Odoo, defining their access rights, preferences, and personal information.
+Key Functional Use Cases:
+
+Login credentials and multi-company access
+Assignment of user groups / access rights (Sales, Accounting, Inventory, etc.)
+Employee linking (HR integration)
+Personal preferences (language, timezone, signature, dashboard)
+Approval workflows and notifications
+Salesperson / Purchaser assignment on documents
+POS cashier, Warehouse operator, Accountant roles
+
+Technical DNA:
+
+Model Type: models.Model (persistent, core system model)
+Key Fields:
+login (char, required, unique), password
+partner_id → res.partner (linked contact, required)
+company_id (main company), company_ids (Many2many — allowed companies)
+groups_id → Many2many to res.groups
+active (boolean), tz, lang
+signature, image_1920
+notification_type (email/inbox), odoobot_state
+Computed: name (from partner), email
+
+Critical Hooks: create, write (password hashing, group changes), _check_credentials, action_reset_password
+Security: Extremely sensitive — record rules + group-based access control
+
+RAG Routing Keywords:
+user, res.users, system user, login user, Odoo user, internal user, portal user, employee user, salesperson, cashier, user groups, access rights, user profile
+Related Models (most joined):
+
+res.partner (linked contact)
+res.groups (via groups_id)
+res.company (company_id / company_ids)
+hr.employee (linked employee)
+mail.channel, mail.message (notifications)
+Almost every transactional document (sale.order.user_id, purchase.order.user_id, etc.)
+
+Ultra-Dense Vector Paragraph:
+res.users is Odoo’s core user model storing login, password, linked partner_id, allowed companies, groups_id (access rights), language, timezone, and signature. It controls system authentication, multi-company access, permissions, notifications, and is referenced as user_id / salesperson on sales orders, purchases, tasks, documents, and throughout the entire Odoo platform.

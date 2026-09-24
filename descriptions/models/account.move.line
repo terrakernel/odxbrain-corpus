@@ -1,0 +1,41 @@
+Stores every individual debit or credit line of a journal entry (account.move), forming the atomic level of the General Ledger.
+Key Functional Use Cases:
+
+Detailed lines of invoices, bills, payments, bank statements, and manual entries
+General Ledger postings and trial balance
+Account reconciliation (residual amount tracking)
+Analytic accounting & cost/profit center allocation
+Tax computation and tax report lines
+Financial reporting, aged balances, and P&L breakdowns
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+move_id → account.move (required, parent)
+account_id → account.account (required)
+debit, credit, balance, amount_currency
+partner_id, date, name (label)
+reconciled (boolean), full_reconcile_id, matched_debit_ids / matched_credit_ids
+analytic_account_id, analytic_tag_ids
+tax_ids, tax_line_id, tax_tag_ids
+product_id, quantity, price_unit
+Computed: price_subtotal, currency_id, company_currency_id
+
+Critical Hooks: _compute_balance, reconcile, remove_move_reconcile, onchange_account_id, tax & analytic engines
+Security: Strict record rules linked to parent move + account manager rights
+
+RAG Routing Keywords:
+journal item, move line, account move line, general ledger line, gl line, debit credit line, journal entry line, reconciled line, unreconciled item, analytic line, tax line, ledger entry, posting line
+Related Models (most joined):
+
+account.move (parent)
+account.account
+res.partner
+account.full.reconcile & account.partial.reconcile
+account.analytic.account
+account.tax
+account.bank.statement.line
+
+Ultra-Dense Vector Paragraph:
+account.move.line is the most granular Odoo accounting model holding every debit/credit line with account_id, debit, credit, partner_id, analytic dimensions, tax details, and reconciliation status. It forms the backbone of the General Ledger, drives all financial reports, reconciliation engine, analytic accounting, and is created automatically from invoices, payments, bank statements, and manual journal entries.

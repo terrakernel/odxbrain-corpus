@@ -1,0 +1,43 @@
+Master / parent record that holds all common data shared across all variants of a product (name, description, category, costing, routes, etc.).
+Key Functional Use Cases:
+
+Define base product information used by all variants
+Manage attributes and variant creation (size, color, etc.)
+Set default sales/purchase behavior, taxes, and pricelists
+Control inventory valuation, routes (MTO/MTS, manufacture, buy)
+eCommerce product pages and descriptions
+BOMs, suppliers, and costing at template level
+Mass updates and reporting on product families
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (char, required), default_code (base reference)
+categ_id → product.category
+type (product / consu / service)
+sale_ok, purchase_ok, active
+uom_id, uom_po_id
+list_price, standard_price
+attribute_line_ids → One2many to product.template.attribute.line
+tag_ids → Many2many to product.tag
+description_sale, description_purchase, image_1920
+route_ids, seller_ids
+
+Critical Hooks: create_variant_ids, _compute_price, onchange_categ_id, _get_variant_name
+Security: product.group_product_manager + company rules
+
+RAG Routing Keywords:
+product template, product master, product form, base product, product.model, template product, product attributes, product family, non-variant product, product definition, product.template
+Related Models (most joined):
+
+product.product (child variants — most important)
+product.category
+product.attribute.line / product.attribute.value
+product.pricelist.item
+mrp.bom
+product.supplierinfo
+stock.quant (via variants)
+
+Ultra-Dense Vector Paragraph:
+product.template is Odoo’s master product model containing shared data (name, categ_id, type, uom, list_price, standard_price, description, routes, attributes, and tags) for a product family. It serves as the parent of all product.product variants and is the central definition point used by Sales, Purchase, Inventory, Manufacturing, eCommerce, and POS across the entire system.

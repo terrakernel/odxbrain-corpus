@@ -1,0 +1,119 @@
+{
+  "_comment": [
+    "Per-model Odoo version and edition facts for Layer 1 (DECISIONS.md 17, 17a).",
+    "",
+    "Verified against real Odoo source -- community 14.0-19.0 from odoo/odoo, and ENTERPRISE",
+    "17.0/18.0/19.0 from official +e source packages. Not from memory: DECISIONS.md 12's",
+    "recalled list was corrected on one entry and was missing another entirely.",
+    "",
+    "A model absent from `models` below is present, unchanged, in every supported version and",
+    "in Community. That is 37 of 41 -- the stable core is genuinely stable, which is the whole",
+    "premise of baking one vector per concept.",
+    "",
+    "Edition is decided by the DECLARING MODULE'S manifest license (LGPL-3/AGPL-3 = community,",
+    "OEEL-1/OPL-1 = enterprise), not by absence from the community repository. See",
+    "tools/audit_odoo_edition.py for why that distinction matters."
+  ],
+  "audit": {
+    "community": {
+      "source": "github.com/odoo/odoo",
+      "tool": "tools/audit_odoo_models.sh",
+      "method": "class-body `_name = '<model>'` declaration in *.py, anchored; `_inherit` alone does not count",
+      "verified": "2026-09-21",
+      "range": [
+        "14.0",
+        "19.0"
+      ],
+      "branch_heads": {
+        "14.0": "cc0060e889603eb2e47fa44a8a22a70d7d784185",
+        "15.0": "3a28e5b0adbb36bdb1155a6854cdfbe4e7f9b187",
+        "16.0": "2df25c68396510abdb85f9b94ae0ba73f8cb340d",
+        "17.0": "5553002ba26972ba855585bfa37b54d4fee1fc56",
+        "18.0": "3c3e3b3d17cbd98584c7685e607d9085712adfe0",
+        "19.0": "3b7765bdec16ce98b7a5e9fac2ae3114f6a93ecd"
+      },
+      "note_14_15_frozen": "14.0 and 15.0 last moved in 2024 and are out of Odoo's support window, so those two columns are settled permanently."
+    },
+    "enterprise": {
+      "source": "official odoo_<ver>+e source packages (registered partner access)",
+      "tool": "tools/audit_odoo_edition.py",
+      "method": "declaring module's __manifest__.py license: LGPL-3/AGPL-3 = community, OEEL-1/OPL-1 = enterprise",
+      "verified": "2026-09-21",
+      "trees": [
+        "odoo-17.0+e.20260921",
+        "odoo-18.0+e.20260921",
+        "odoo-19.0+e.20260902"
+      ],
+      "gap": "Enterprise 14.0, 15.0 and 16.0 were not available. account.asset's edition is directly verified for 17.0-19.0 and inferred for 14.0-16.0 from its absence across all six community branches.",
+      "scale_note": "Odoo 19.0 ships 716 OEEL-1 modules against 662 LGPL-3 -- more than half of Odoo is Enterprise. Irrelevant for the 41-model core, but it dominates any future corpus growth."
+    }
+  },
+  "models": {
+    "stock.route": {
+      "aliases": {
+        "14.0": "stock.location.route",
+        "15.0": "stock.location.route"
+      },
+      "kind": "rename",
+      "note": "Pure rename in addons/stock/models/stock_location.py; the CONCEPT exists in every supported version, only the identifier moved at 16.0. Deliberately carries NO `since`: `since` would mean the model did not exist below 16, which is false and would filter 14.0/15.0 instances out of an answer they can use under the old name. DECISIONS.md 12 guessed 17.0 for this rename -- it is 16.0."
+    },
+    "product.tag": {
+      "since": "16.0",
+      "kind": "added",
+      "note": "Does not exist in 14.0 or 15.0. Naming it for such an instance is the exact failure mode the version field exists to prevent."
+    },
+    "account.asset": {
+      "edition": "enterprise",
+      "kind": "edition",
+      "license": "OEEL-1",
+      "module": "account_asset",
+      "verified_in": [
+        "17.0",
+        "18.0",
+        "19.0"
+      ],
+      "note": "VERIFIED, not inferred (DECISIONS.md 17a): the declaring module odoo/addons/account_asset carries 'license': 'OEEL-1' and depends on the enterprise `accountant` module. Absent from community in all six branches. Applies to every version, so this is the edition axis rather than a range.",
+      "provisional": true,
+      "provisional_reason": "Edition verified directly for 17.0-19.0 only; Enterprise 14.0/15.0/16.0 source was not available. Below 17.0 this is inferred from absence across all six community branches. Run the corpus audit against those trees to clear it (corpus/README.md)."
+    },
+    "stock.valuation.layer": {
+      "until": "18.0",
+      "kind": "dissolved",
+      "successor": {
+        "19.0": "stock.move"
+      },
+      "note": "NOT a rename, and not in DECISIONS.md 12's list at all. Removed in 19.0: its fields (value, remaining_qty, remaining_value, account_move_id) moved onto stock.move itself. `product.value` in 19.0 is a different, narrower concept -- the history of MANUAL value updates -- so it is not the successor for a routing question. This is 12's 'a version genuinely reorganises semantics' case; routing an inventory-valuation question to stock.move on 19.0 is approximately right, but the card text still describes an 18.0-shaped world. Confirmed 2026-09-21 against Enterprise 19.0 as well: the removal is not an edition artifact, the model is gone in both editions.",
+      "verified_editions": [
+        "community",
+        "enterprise"
+      ]
+    }
+  },
+  "edition_detection": {
+    "_comment": [
+      "How a running instance's edition is detected, verified by executing release.py from",
+      "both a community and an enterprise tree (DECISIONS.md 17a).",
+      "",
+      "An earlier draft of this design assumed version_info[5] was the edition slot. It is NOT:",
+      "the field exists in the 6-tuple but is '' in BOTH editions. Odoo marks edition by",
+      "appending to `version` instead, via `version += '+e-<date>'` in the enterprise build."
+    ],
+    "source": "ODXProxy POST /api/odoo/version -> Odoo RPC_VERSION_1",
+    "version_axis": {
+      "field": "server_serie",
+      "example": "19.0",
+      "note": "Clean major.minor. Prefer this over parsing server_version."
+    },
+    "edition_axis": {
+      "field": "server_version",
+      "community_example": "16.0",
+      "enterprise_example": "19.0+e-20260902",
+      "test": "'+e' in server_version"
+    },
+    "do_not_use": {
+      "field": "server_version_info[5]",
+      "reason": "'' in both community and enterprise builds; the slot exists in the tuple format but Odoo does not populate it."
+    },
+    "open_saas": "19.0's release.py notes the MAJOR version can be an arbitrary string ('saas~xx') during release, so server_serie may be e.g. 'saas~16.3'. The mapping from a saas~ serie to a supported major is UNDECIDED -- an exact-match filter would return nothing for a whole class of Odoo Online instances."
+  }
+}

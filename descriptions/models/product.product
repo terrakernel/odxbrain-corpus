@@ -1,0 +1,40 @@
+Represents a specific sellable, stockable, or consumable variant of a product (the actual item tracked in inventory, sales, and purchases).
+Key Functional Use Cases:
+
+Individual items with specific attributes (color, size, capacity, etc.)
+Inventory tracking (on hand, available, reserved, forecasted)
+Sales, purchases, and POS transactions
+Manufacturing (as component or finished good)
+Pricing per variant, barcode, and internal reference
+Multi-company, multi-warehouse stock levels
+Product listings on website and in reports
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+product_tmpl_id → product.template (required, parent)
+name (inherited + variant name), default_code (SKU), barcode
+lst_price (public price), standard_price (cost)
+uom_id, uom_po_id
+available_in_pos, sale_ok, purchase_ok, active
+attribute_value_ids → Many2many to product.attribute.value
+Computed: price, qty_available, virtual_available, incoming_qty, outgoing_qty
+
+Critical Hooks: onchange_product_tmpl_id, _compute_quantities, _get_name, variant creation logic
+Security: product.group_product_manager + company + warehouse rules
+
+RAG Routing Keywords:
+product variant, product.product, item variant, SKU, stockable product, sellable product, finished good, raw material, consumable, internal reference, barcode product, variant combination, product code
+Related Models (most joined):
+
+product.template (parent template)
+product.attribute.value (variant values)
+stock.quant (stock levels)
+sale.order.line, purchase.order.line, pos.order.line
+mrp.bom, mrp.production
+product.pricelist.item
+account.account (via category)
+
+Ultra-Dense Vector Paragraph:
+product.product is Odoo’s main variant-level model inheriting from product.template, storing specific SKU (default_code), barcode, attribute combinations, prices, and real-time stock quantities. It is the central record used everywhere for inventory movements, sales/purchase lines, manufacturing, POS, and reporting, representing the actual physical or service item transacted in the system.

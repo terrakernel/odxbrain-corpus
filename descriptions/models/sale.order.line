@@ -1,0 +1,40 @@
+Represents each individual product or service line on a Sales Order / Quotation, containing quantity, price, discount, taxes, and delivery information.
+Key Functional Use Cases:
+
+Define ordered items with unit price, discounts, and taxes
+Trigger stock reservations and deliveries (stock.move)
+Calculate line and order totals (subtotal, tax, total)
+Support product configurator, upsell, and service hours
+Handle partial deliveries and remaining quantities
+Sales reporting, margin analysis per line/product
+Dropshipping and Make-To-Order flows
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+order_id → sale.order (required, parent)
+product_id → product.product, product_uom_qty (float)
+price_unit (monetary), discount (float %)
+tax_id (Many2many to account.tax)
+qty_delivered, qty_invoiced, qty_to_invoice
+price_reduce (discounted price), margin, purchase_price
+commitment_date, name (description)
+
+Critical Hooks: onchange_product_id, _compute_amount, _compute_margin, _prepare_procurement_values, _compute_qty_delivered
+Security: Inherited from parent sale.order
+
+RAG Routing Keywords:
+sales order line, SO line, quotation line, sale line, customer order line, sales order detail, ordered quantity, sales discount line, delivered quantity, invoiced quantity, sale product line, margin line
+Related Models (most joined):
+
+sale.order (parent)
+product.product / product.template
+stock.move / stock.picking (deliveries)
+account.move.line (invoicing)
+res.partner (via order)
+uom.uom
+account.tax
+
+Ultra-Dense Vector Paragraph:
+sale.order.line is the child model of sale.order that stores each sold item with product_id, product_uom_qty, price_unit, discount, tax_id, and delivery/invoicing quantities. It drives stock reservation, delivery creation, invoice line generation, margin calculation, and is the core transactional detail used across Sales, Inventory, and Accounting in Odoo.

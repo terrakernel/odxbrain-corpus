@@ -1,0 +1,40 @@
+Search-Dense Summary – product.category (Product Category)
+Core Purpose (1-line functional):
+Hierarchical classification system for organizing all products and services, used for reporting, searching, accounting, and access control.
+Key Functional Use Cases:
+
+Build multi-level product trees (e.g. Electronics > Phones > Smartphones)
+Default accounting (income/expense accounts, taxes)
+Filter products in sales, purchase, and inventory
+Costing method and inventory valuation settings (per category)
+Website e-commerce category mapping
+Reporting (sales by category, stock value by category)
+Permission and visibility control
+
+Technical DNA:
+
+Model Type: models.Model (persistent + mail.thread)
+Key Fields:
+name (char, required), complete_name (computed)
+parent_id → product.category (hierarchical)
+child_id (One2many)
+property_account_income_id, property_account_expense_id → account.account
+property_cost_method, property_valuation
+property_stock_valuation_account_id, property_stock_account_input, property_stock_account_output
+removal_strategy_id, route_ids
+
+Critical Hooks: _compute_complete_name, onchange_parent_id, _check_category_recursion
+Security: product.group_product_manager + company rules
+
+RAG Routing Keywords:
+product category, product categories, item category, goods category, stock category, accounting category, product hierarchy, category structure, product group, merchandise category, pos category, e-commerce category
+Related Models (most joined):
+
+product.product / product.template (via categ_id)
+product.category (parent/child)
+account.account (income/expense/valuation)
+stock.warehouse, stock.location
+pos.category (separate but often mapped)
+
+Ultra-Dense Vector Paragraph:
+product.category is Odoo’s hierarchical model for classifying products with parent_id, complete_name, property accounts (income/expense), valuation method, and stock accounts. It drives product organization, default accounting behavior, inventory costing, reporting, and is the main categorization system referenced by every product.template, sales, purchase, and stock operations across Odoo.

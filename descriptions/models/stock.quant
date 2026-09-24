@@ -1,0 +1,39 @@
+Stores the real-time quantity on hand of a product (and lot/serial) in a specific location. It is the single source of truth for current inventory levels in Odoo.
+Key Functional Use Cases:
+
+Display stock availability (on hand, reserved, available)
+Support real-time inventory in Sales, Purchase, Manufacturing, and POS
+Enable stock valuation and accounting entries
+Basis for reservation, replenishment, and MRP
+Inventory adjustments and cycle counts
+Lot/serial number traceability and aging
+Multi-warehouse and multi-location stock overview
+
+Technical DNA:
+
+Model Type: models.Model (persistent, high-performance)
+Key Fields:
+product_id → product.product (required)
+location_id → stock.location (required)
+lot_id → stock.lot (optional)
+quantity (float), reserved_quantity (float)
+inventory_quantity (for adjustments), inventory_date
+owner_id, package_id, company_id
+Computed: available_quantity (= quantity - reserved_quantity)
+
+Critical Hooks: _update_available_quantity, _gather, action_apply_inventory, create / write (strict concurrency control)
+Security: stock.group_stock_manager + strict location/company rules (very protected)
+
+RAG Routing Keywords:
+stock quant, quantity on hand, stock level, inventory quantity, available stock, reserved quantity, on hand qty, stock.quant, real-time stock, lot quantity, location stock, current inventory
+Related Models (most joined):
+
+product.product
+stock.location
+stock.lot
+stock.move / stock.move.line (updates quants)
+stock.picking
+stock.valuation.layer (for costing)
+
+Ultra-Dense Vector Paragraph:
+stock.quant is Odoo’s core real-time inventory model that holds current quantity and reserved_quantity of a product_id in a specific location_id (and lot_id). It is automatically updated by every stock.move, serves as the single source of truth for stock availability, reservations, valuation, and is heavily queried by Sales, Manufacturing, POS, and reporting across the entire system.

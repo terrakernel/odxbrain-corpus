@@ -1,0 +1,38 @@
+Defines the rules for when and how invoices should be paid (due dates, installments, discounts), applied automatically on sales orders, invoices, and vendor bills.
+Key Functional Use Cases:
+
+Standard terms: 30/60/90 days net, immediate payment
+Split payments (e.g. 30% advance + 70% on delivery)
+Early payment discounts (2% 10 days, net 30)
+Applied on customer invoices, vendor bills, and sales/purchase orders
+Controls due date calculation and aging reports
+Fiscal compliance (localization-specific terms)
+
+Technical DNA:
+
+Model Type: models.Model (persistent)
+Key Fields:
+name (char, required), active (boolean)
+line_ids → One2many to account.payment.term.line (most important)
+company_id
+note (html for invoice footer)
+Computed: due_date calculation logic
+
+Critical child model: account.payment.term.line
+value (percent/balance), days, value_amount, discount_days, discount_percentage
+
+Critical Hooks: compute, _compute_terms, onchange for line recalculation
+Security: Basic company rules (accessible to sales & accounting users)
+
+RAG Routing Keywords:
+payment term, payment terms, terms and conditions, due date, net 30, 2/10 net 30, installment, early discount, payment schedule, invoice due date, split payment, payment condition
+Related Models (most joined):
+
+account.payment.term.line (child lines)
+account.move (via invoice_payment_term_id)
+sale.order, purchase.order
+account.move.line (for due date on lines)
+res.partner (default payment term)
+
+Ultra-Dense Vector Paragraph:
+account.payment.term defines customer and vendor payment conditions with name and multiple account.payment.term.line for installments, days, percentages, and early payment discounts. It is used to automatically compute due dates on invoices (account.move), sales orders, and purchase orders, driving aging reports, cash flow forecasting, and financial compliance across Odoo sales, purchase, and accounting modules.

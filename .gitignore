@@ -1,0 +1,19 @@
+# Packs are release assets attached to a tag, never commits (docs/RELEASING.md).
+/packs/
+/pack/
+*.gguf
+
+# Audit scratch (tools/audit_odoo_models.sh defaults to /tmp, but people redirect it)
+/odoo-audit/
+
+# Python
+.venv/
+__pycache__/
+
+# macOS, including AppleDouble sidecars from copying off a Mac
+.DS_Store
+._*
+
+# Editors
+/.idea/
+/.vscode/
