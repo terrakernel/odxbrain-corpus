@@ -25,7 +25,7 @@ Critical Hooks: action_post, button_draft, action_reverse, _post, compute_amount
 Security: account.group_account_manager + strong record rules by journal/company
 
 RAG Routing Keywords:
-journal entry, account move, invoice, vendor bill, customer invoice, credit note, debit note, accounting entry, posted journal, general ledger entry, move line, financial transaction, accounting document, posted move, unpaid invoice, not paid, outstanding invoice, open invoice, overdue invoice, partially paid, payment status, payment state, amount due, residual amount, awaiting payment, accounts receivable, accounts payable, invoice aging
+journal entry, account move, invoice, vendor bill, customer invoice, credit note, debit note, accounting entry, posted journal, general ledger entry, move line, financial transaction, accounting document, posted move, unpaid invoice, not paid, outstanding invoice, open invoice, overdue invoice, partially paid, payment status, payment state, amount due, residual amount, awaiting payment, accounts receivable, accounts payable, invoice aging, money owed, customers owe us, who owes us, what we owe vendors, bills to pay, unpaid vendor bill, invoice status, bill status
 Related Models (most joined):
 
 account.move.line (child lines — most important)
